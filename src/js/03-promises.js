@@ -28,17 +28,17 @@ function createPromise(position, delay) {
 function onFormSubmit(event) {
   event.preventDefault();
 
-  const DELAY = delayEl.value;
-  const INTERVAL = stepEl.value;
-  const AMOUNT = amountEl.value;
+  const DELAY = Number(delayEl.value);
+  const INTERVAL = Number(stepEl.value);
+  const AMOUNT = Number(amountEl.value);
 
   let position = 0;
   let delay = DELAY;
 
   setTimeout(() => {
     const intervalId = setInterval(() => {
-        position += 1;
-        console.log(position);
+      position += 1;
+      
         createPromise(position, delay)
         .then(({ position, delay }) => {
           Notiflix.Notify.success(`Fulfilled promise ${position} in ${delay}ms`);
@@ -48,9 +48,13 @@ function onFormSubmit(event) {
           Notiflix.Notify.failure(`Rejected promise ${position} in ${delay}ms`);
           console.log(`❌ Rejected promise ${position} in ${delay}ms`);
         })
+      
+      delay += INTERVAL;
+      
         if (position === AMOUNT) {
           clearInterval(intervalId);
         }
+      
     }, INTERVAL);
   }, DELAY);
 }
