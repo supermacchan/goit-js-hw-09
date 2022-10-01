@@ -3,6 +3,11 @@ import "flatpickr/dist/flatpickr.min.css";
 import Notiflix from 'notiflix';
 
 const startBtn = document.querySelector('[data-start]');
+const days = document.querySelector('[data-days]');
+const hours = document.querySelector('[data-hours]');
+const minutes = document.querySelector('[data-minutes]');
+const seconds = document.querySelector('[data-seconds]');
+
 let selectedDate;
 
 const options = {
@@ -12,24 +17,36 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
       console.log(selectedDates[0]);
+
       selectedDate = selectedDates[0];
+
       if (selectedDate < options.defaultDate) {
         startBtn.disabled = true;
         Notiflix.Notify.failure("Please choose a date in the future");
-      } else {
+        } else {
         startBtn.disabled = false;
-    }
+        }
   },
 };
 
 flatpickr("#datetime-picker", options);
 
+
 startBtn.addEventListener('click', handleStartCountdown);
 
 function handleStartCountdown(event) {
-    const timeRemaining = selectedDate - options.defaultDate;
-    convertMs(timeRemaining);
-    console.log(convertMs(timeRemaining));
+    let timeRemaining = selectedDate - options.defaultDate;
+
+    showRemainingTime(timeRemaining);
+
+    const countdownID = setInterval(() => {
+        timeRemaining -= 1000;
+        showRemainingTime(timeRemaining);
+
+        if (timeRemaining < 1000) {
+          clearInterval(countdownID);
+        }
+    }, 1000);
 }
 
 function convertMs(ms) {
@@ -53,4 +70,16 @@ function convertMs(ms) {
 
 function addLeadingZero(value) {
     return value.toString().padStart(2, '0');
+}
+
+function showRemainingTime(timeRemaining) {
+    const daysRemaining = convertMs(timeRemaining).days;
+    const hoursRemaining = convertMs(timeRemaining).hours;
+    const minutesRemaining = convertMs(timeRemaining).minutes;
+    const secondsRemaining = convertMs(timeRemaining).seconds;
+
+    days.textContent = addLeadingZero(daysRemaining);
+    hours.textContent = addLeadingZero(hoursRemaining);
+    minutes.textContent = addLeadingZero(minutesRemaining);
+    seconds.textContent = addLeadingZero(secondsRemaining);
 }
